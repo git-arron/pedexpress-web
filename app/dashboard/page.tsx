@@ -48,7 +48,8 @@ export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const [sessionPassword, setSessionPassword] = useState('');
   
-  // New state for the search bar
+  // Sidebar toggle state for mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function Dashboard() {
     setContent('');
     setEmotion('Happy');
     setWeather('Sunny');
+    setIsSidebarOpen(false); // Close sidebar on mobile after clicking new
   };
 
   const handleSave = async () => {
@@ -138,6 +140,7 @@ export default function Dashboard() {
     
     const decryptedContent = await decryptText(entry.content, sessionPassword);
     setContent(decryptedContent);
+    setIsSidebarOpen(false); // Auto-close sidebar on mobile after selection
   };
 
   const handleLogout = () => {
@@ -153,18 +156,27 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans">
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
       <style dangerouslySetInnerHTML={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10 flex-shrink-0">
-        <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+      {/* Mobile Overlay Background */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-800/40 z-40 md:hidden transition-opacity" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Fixed on mobile, static on desktop */}
+      <div className={`fixed md:static inset-y-0 left-0 z-50 w-4/5 max-w-[320px] md:w-80 bg-white border-r border-slate-200 flex flex-col shadow-2xl md:shadow-sm transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex-shrink-0`}>
+        <div className="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <div className="flex items-center">
             <PedExpressLogo />
-            <h1 className="font-extrabold text-xl tracking-tight text-teal-800">PEDExpress</h1>
+            <h1 className="font-extrabold text-lg md:text-xl tracking-tight text-teal-800">PEDExpress</h1>
           </div>
           <button onClick={handleNewEntry} className="px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 font-medium rounded-lg text-sm transition-colors border border-teal-100">
             + New
@@ -234,19 +246,31 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
+      <div className="flex-1 flex flex-col bg-white overflow-hidden relative w-full">
         
-        <div className="px-8 py-6 border-b border-slate-100 bg-white shadow-sm z-10">
-          <div className="flex flex-col gap-2 w-full max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 w-full">
-              <span className="text-sm font-bold text-slate-400 whitespace-nowrap uppercase tracking-wider w-36 flex-shrink-0">I'm feeling...</span>
-              <div className="flex gap-2 overflow-x-auto py-2 px-1 w-full hide-scrollbar">
+        {/* Mobile Header Bar */}
+        <div className="md:hidden px-4 py-3 border-b border-slate-100 bg-white flex items-center justify-between z-10">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 -ml-2 text-slate-500 hover:bg-slate-50 rounded-lg"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+          <span className="font-bold text-teal-800">PEDExpress</span>
+          <div className="w-6"></div> {/* Spacer for alignment */}
+        </div>
+
+        <div className="px-4 py-4 md:px-8 md:py-6 border-b border-slate-100 bg-white shadow-sm z-10">
+          <div className="flex flex-col gap-2 md:gap-4 w-full max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 md:gap-4 w-full">
+              <span className="text-xs md:text-sm font-bold text-slate-400 whitespace-nowrap uppercase tracking-wider w-24 md:w-36 flex-shrink-0">I'm feeling...</span>
+              <div className="flex gap-1 md:gap-2 overflow-x-auto py-1 md:py-2 px-1 w-full hide-scrollbar">
                 {EMOTIONS.map((emo) => (
                   <button
                     key={emo.label}
                     onClick={() => setEmotion(emo.label)}
                     title={emo.label}
-                    className={`flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full text-xl transition-all ${emotion === emo.label ? 'bg-teal-100 shadow-sm ring-2 ring-teal-400 z-10' : 'hover:bg-slate-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100'}`}
+                    className={`flex-shrink-0 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full text-lg md:text-xl transition-all ${emotion === emo.label ? 'bg-teal-100 shadow-sm ring-2 ring-teal-400 z-10' : 'hover:bg-slate-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100'}`}
                   >
                     {emo.emoji}
                   </button>
@@ -254,15 +278,15 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 w-full">
-              <span className="text-sm font-bold text-slate-400 whitespace-nowrap uppercase tracking-wider w-36 flex-shrink-0">The weather is...</span>
-              <div className="flex gap-2 overflow-x-auto py-2 px-1 w-full hide-scrollbar">
+            <div className="flex items-center gap-2 md:gap-4 w-full">
+              <span className="text-xs md:text-sm font-bold text-slate-400 whitespace-nowrap uppercase tracking-wider w-24 md:w-36 flex-shrink-0">Weather is...</span>
+              <div className="flex gap-1 md:gap-2 overflow-x-auto py-1 md:py-2 px-1 w-full hide-scrollbar">
                 {WEATHER.map((wea) => (
                   <button
                     key={wea.label}
                     onClick={() => setWeather(wea.label)}
                     title={wea.label}
-                    className={`flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full text-xl transition-all ${weather === wea.label ? 'bg-amber-100 shadow-sm ring-2 ring-amber-400 z-10' : 'hover:bg-slate-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100'}`}
+                    className={`flex-shrink-0 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full text-lg md:text-xl transition-all ${weather === wea.label ? 'bg-amber-100 shadow-sm ring-2 ring-amber-400 z-10' : 'hover:bg-slate-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100'}`}
                   >
                     {wea.emoji}
                   </button>
@@ -272,11 +296,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex-1 px-12 py-10 overflow-y-auto w-full max-w-4xl mx-auto pb-32">
-          <p className="flex items-center gap-2 text-teal-600 text-sm font-bold mb-4 tracking-wide uppercase">
+        <div className="flex-1 px-6 py-6 md:px-12 md:py-10 overflow-y-auto w-full max-w-4xl mx-auto pb-32">
+          <p className="flex items-center gap-2 text-teal-600 text-xs md:text-sm font-bold mb-4 tracking-wide uppercase">
             <span>{greeting}{userName ? `, ${userName}` : ''}</span>
-            <span className="text-teal-300">|</span>
-            <span>{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <span className="text-teal-300 hidden md:inline">|</span>
+            <span className="hidden md:inline">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </p>
 
           <input
@@ -284,23 +308,23 @@ export default function Dashboard() {
             placeholder="Give your entry a title..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full text-4xl font-extrabold text-slate-800 border-none outline-none mb-8 bg-transparent placeholder-slate-200 transition-colors focus:placeholder-slate-100"
+            className="w-full text-2xl md:text-4xl font-extrabold text-slate-800 border-none outline-none mb-6 md:mb-8 bg-transparent placeholder-slate-200 transition-colors focus:placeholder-slate-100"
           />
           <textarea
             placeholder="Write from the heart... your thoughts are encrypted and secure."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full h-[60vh] text-lg text-slate-700 border-none outline-none resize-none bg-transparent placeholder-slate-300 leading-relaxed tracking-wide"
+            className="w-full h-[60vh] text-base md:text-lg text-slate-700 border-none outline-none resize-none bg-transparent placeholder-slate-300 leading-relaxed tracking-wide"
           />
         </div>
 
-        <div className="absolute bottom-8 right-12 flex gap-3 z-20">
+        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-12 flex flex-col md:flex-row gap-2 md:gap-3 z-20">
           {activeEntry && (
-            <button onClick={() => handleDelete(activeEntry.id!)} className="px-6 py-3 text-sm font-bold text-red-500 bg-white border border-red-100 hover:bg-red-50 rounded-full shadow-lg transition-all transform hover:-translate-y-1">
-              Delete Entry
+            <button onClick={() => handleDelete(activeEntry.id!)} className="px-6 py-3 text-xs md:text-sm font-bold text-red-500 bg-white border border-red-100 hover:bg-red-50 rounded-full shadow-lg transition-all transform hover:-translate-y-1 text-center">
+              Delete
             </button>
           )}
-          <button onClick={handleSave} className="px-8 py-3 text-sm font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+          <button onClick={handleSave} className="px-8 py-3 text-xs md:text-sm font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 text-center">
             Save Entry
           </button>
         </div>
