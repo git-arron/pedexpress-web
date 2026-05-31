@@ -43,11 +43,9 @@ export default function Home() {
     setIsMounted(true);
   }, []);
 
-  // Fetch the user data directly
   const users = useLiveQuery(() => db.users.toArray());
   const user = users?.[0]; 
 
-  // Form States
   const [journalName, setJournalName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -55,7 +53,6 @@ export default function Home() {
   const [securityAnswer, setSecurityAnswer] = useState('');
   const [error, setError] = useState('');
   
-  // View Toggle State
   const [isRecovering, setIsRecovering] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -172,14 +169,14 @@ export default function Home() {
     return <div className="flex h-screen items-center justify-center bg-slate-50 text-slate-500">Loading environment...</div>;
   }
 
-  // === UI: SIGN UP (If no account exists) ===
+  // === UI: SIGN UP ===
   if (users.length === 0) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans">
-        <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-lg border border-slate-100">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-teal-700 tracking-tight mb-2">PEDExpress</h1>
-            <p className="text-sm text-slate-500 font-medium">Express freely & securely.</p>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 sm:p-6 font-sans">
+        <div className="w-full max-w-md rounded-2xl bg-white p-6 sm:p-10 shadow-lg border border-slate-100">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-teal-700 tracking-tight mb-2">PEDExpress</h1>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">Express freely & securely.</p>
           </div>
           
           {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm font-medium rounded-lg border border-red-100">{error}</div>}
@@ -189,7 +186,7 @@ export default function Home() {
               <label className="block text-sm font-bold text-slate-700 mb-1">Journal Name</label>
               <input type="text" required value={journalName} onChange={e => setJournalName(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800" placeholder="e.g., Mystic" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
                 <input type="password" required value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800" />
@@ -201,7 +198,7 @@ export default function Home() {
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1">Security Question</label>
-              <select value={securityQuestion} onChange={e => setSecurityQuestion(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800">
+              <select value={securityQuestion} onChange={e => setSecurityQuestion(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800 text-sm">
                 {SECURITY_QUESTIONS.map((q, i) => (
                   <option key={i} value={q}>{q}</option>
                 ))}
@@ -224,14 +221,14 @@ export default function Home() {
   // === UI: PASSWORD RECOVERY ===
   if (isRecovering && user) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans">
-        <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg border border-slate-100">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 sm:p-6 font-sans">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-6 sm:p-8 shadow-lg border border-slate-100">
           <div className="text-center mb-6">
-            <h2 className="text-xl font-extrabold text-slate-800 mb-1">Account Recovery</h2>
-            <p className="text-sm text-slate-500 font-medium">Resetting access for <span className="font-bold text-teal-700">{user.journalName}</span></p>
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-800 mb-1">Account Recovery</h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">Resetting access for <span className="font-bold text-teal-700">{user.journalName}</span></p>
           </div>
 
-          <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-100">
+          <div className="mb-6 p-3 sm:p-4 bg-amber-50 rounded-lg border border-amber-100">
             <p className="text-xs text-amber-800 font-medium text-center leading-relaxed">
               <span className="font-bold">Security Notice:</span> Resetting your password will permanently delete your previous entries, as they are cryptographically locked with your old password.
             </p>
@@ -245,9 +242,9 @@ export default function Home() {
               <p className="text-sm font-medium text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-100">{user.securityQuestion}</p>
             </div>
             <div>
-              <input type="text" required placeholder="Your Answer" value={securityAnswer} onChange={e => setSecurityAnswer(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800" />
+              <input type="text" required placeholder="Your Answer" value={securityAnswer} onChange={e => setSecurityAnswer(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800 text-sm sm:text-base" />
             </div>
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
               <input type="password" required placeholder="New Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800 text-sm" />
               <input type="password" required placeholder="Confirm" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800 text-sm" />
             </div>
@@ -267,20 +264,21 @@ export default function Home() {
     );
   }
 
-  // === UI: LOG IN (If account exists) ===
+  // === UI: LOG IN ===
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-10 shadow-lg border border-slate-100">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 text-teal-600 mb-4">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4 sm:p-6 font-sans">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 sm:p-10 shadow-lg border border-slate-100">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-teal-100 text-teal-600 mb-4">
+            <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-800 mb-1">Welcome Back, {user?.journalName}</h2>          <p className="text-sm text-slate-500 font-medium">Enter your password to unlock.</p>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 mb-1">Welcome Back, {user?.journalName}</h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">Enter your password to unlock.</p>
         </div>
 
         {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-center text-sm font-medium rounded-lg border border-red-100">{error}</div>}
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
           <div>
             <input type="password" required placeholder="Journal Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all text-slate-800 text-center tracking-widest font-mono" />
           </div>
